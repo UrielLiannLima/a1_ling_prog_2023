@@ -1,65 +1,68 @@
-import sys
-import os
 import matplotlib.pyplot as plt
 import numpy as np
-
-# Permite puxar do módulo 1 diretório acima para importar o limpar_df
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import limpar_df as ldf
 
-# Abre o diretório e remove as colunas não utilizadas como também as linhas com outliers
-df = ldf.open_df("../data.csv")
-working_df = ldf.remove_outliers(ldf.drop_cols("not_used.txt", df))
-    
-#contando o número de matriculas por raça, foi dividido por um milhão para facilitar a visualização
-parabolica = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_ND"].sum)
-computador = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_BRANCA"].sum)
-copiadora = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_PRETA"].sum)
-impressora = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_PARDA"].sum)
-impressora_mult = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_AMARELA"].sum)
-scanner = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
-nenhum = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
-dvd = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
-som = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
-tv = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
-lousa_digital = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
-multimidia = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
-desktop_aluno = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
-comp_portatil_aluno = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
-tablet_aluno = (df.groupby("TP_DEPENDENCIA")["QT_MAT_BAS_INDIGENA"].sum)
 
-#Gera a figura
-figura = plt.figure()
-#ajusta o tamanho das barras
-barWidht=0.13
-#Ajusta a posição das barras de cada variável
-p1 = np.arange(len(nao_declarada))
-p2 = [x + barWidht for x in p1]
-p3 = [x + barWidht for x in p2]
-p4 = [x + barWidht for x in p3]
-p5 = [x + barWidht for x in p4]
-p6 = [x + barWidht for x in p5]
-#plota o gráfico das 6 variáveis
-plt.bar(p1, nao_declarada, label="Não Declarada", color="#A569BD", width=barWidht)
-plt.bar(p2, branca, label="Branca", color="#F4D03F", width=barWidht)
-plt.bar(p3, preta, label="Preta", color="#3498DB", width=barWidht)
-plt.bar(p4, parda, label="Parda", color="#E74C3C", width=barWidht)
-plt.bar(p5, amarela, label="Amarela", color="#58D68D", width=barWidht)
-plt.bar(p6, indigena, label="Indígena", color="#7F8C8D", width=barWidht)
-plt.ylim(0, 10)
-plt.title("Número de matrículas na educação básica, por tipo de escola")
-plt.xlabel("Tipo de escola")
-#Nomeia o eixo x com o tipo de escola
-plt.xticks([p + barWidht for p in range(len(var1))], ["Federal", "Municipal","Estadual", "Privada"])
-plt.ylabel("Número de matriculas (em milhões)")
-#adiciona legenda ao gráfico, pois são várias variáveis
-plt.legend()
-#mostra a figura
-plt.show()
-#salva a figura
-figura.savefig("analise_alessandra/grafico_Ale.png")
+# Abre o diretório e limpa ele
+df = ldf.open_df("data.csv")
+working_df = ldf.remove_outliers(ldf.drop_cols("indexes/custom.txt", ldf.drop_cols("indexes/base.txt", df)))
 
-#print dos dados, para análise
-print ("Matrículas de pessoas da raça Não declarada: ", nao_declarada, "Matrículas de pessoas da raça Branca: ", branca,
-       "Matrículas de pessoas da raça Preta: ", preta, "Matrículas de pessoas da raça Parda: ", parda, 
-       "Matrículas de pessoas da raça Amarela: ", amarela, "Matrículas de pessoas da raça Indígena: ", indigena, sep="\n\n")
+# Pega quais são todos os estados
+estados = working_df["SG_UF"].unique()
+
+# Colunas importantes porém não incluidas no gráfico
+nao_equip = ["SG_UF", "NO_REGIAO", "SG_UF", "NO_MUNICIPIO", "NO_ENTIDADE", "TP_DEPENDENCIA"]
+
+# Remove as colunas acima e deixa só as de equipamento
+equip = [col for col in df.columns if col not in nao_equip]
+
+marcacao = {
+    "IN_INTERNET":"Internet",
+    "IN_COMPUTADOR":"Computador",
+    "IN_EQUIP_COPIADORA":"Copiadora",
+    "IN_EQUIP_IMPRESSORA":"Impressora",
+    "IN_EQUIP_IMPRESSORA_MULT":"Impressora Multifuncional",
+    "IN_EQUIP_SCANNER":"Scanner",
+    "IN_EQUIP_NENHUM":"Nenhum",
+    "IN_EQUIP_TV":"Televisores",
+    "IN_EQUIP_LOUSA_DIGITAL":"Lousa Digital",
+    }
+
+# Passa por cada tipo de equipamento
+for column, label in marcacao.items():
+    # Faz a figure e o eixo do gráfico
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    colormap = plt.cm.get_cmap('tab10', len(estados))
+
+    espacamento = 0.2
+    index = range(len(estados))
+
+    qtde_equip = []
+
+    # Passa por cada estado para separa-los
+    for estado in estados:
+        state_df = working_df[working_df["SG_UF"] == estado]
+        qtde_equip.append(state_df[column].sum())
+
+    ax.bar(
+        [x for x in index],
+        qtde_equip,
+        label=label,
+        color=colormap(0),
+    )
+
+    ax.set_xlabel("Estados")
+    ax.set_ylabel("Nº de Escolas")
+    ax.set_title(f"Distribuição de {label} por Estado")
+    ax.set_xticks(index)
+    ax.set_xticklabels(estados)
+    ax.legend()
+
+    plt.tight_layout()
+
+    # Salva o gráfico
+    plt.savefig(f'{label}_distribution.png')
+
+    # Mostra o plot
+    plt.show()

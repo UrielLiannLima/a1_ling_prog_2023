@@ -21,7 +21,7 @@ try:
     elif option == "3":
         # Devolve dados customizados
         indexes_file = input("Insira seu arquivo de texto com a extensão (.txt): ")
-        clean_df = ldf.remove_outliers(ldf.drop_cols(f"/indexes/{indexes_file}", ldf.drop_cols("indexes/base.txt", df)))
+        clean_df = ldf.remove_outliers(ldf.drop_cols(f"indexes/{indexes_file}", ldf.drop_cols("indexes/base.txt", df)))
         output_file = input("Escolha o nome do arquivo: ")
         clean_df.to_csv(f"{output_file}.csv", index=False)
     else:
