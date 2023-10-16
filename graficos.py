@@ -26,16 +26,11 @@ structure_df = ldf.remove_outliers(ldf.drop_cols("indexes/custom.txt", ldf.drop_
 # Busca os dados únicos na coluna
 regioes = structure_df["NO_REGIAO"].unique()
 
-# Suponhamos que sua base de dados tenha uma coluna chamada 'texto' que você deseja analisar
-coluna_desejada = 'NO_REGIAO'
-
-# Se você quiser contar uma palavra específica, por exemplo, 'exemplo', você pode fazer o seguinte:
-palavra_alvo = 'Norte'
-
-# Use o método str.count() para contar o número de ocorrências da palavra na coluna
-contagem_palavra_alvo = dados[coluna_desejada].str.lower().str.count(palavra_alvo.lower()).sum()
-
-print(f"A palavra '{palavra_alvo}' aparece {contagem_palavra_alvo} vezes na coluna.")
+coluna_desejada = 'palavras'
+contagem_palavras = dados[coluna_desejada].value_counts()
+palavra_alvo = 'exemplo'
+contagem_palavra_alvo = dados[coluna_desejada].str.count(palavra_alvo).sum()
+print(contagem_palavras)
 
 
 
