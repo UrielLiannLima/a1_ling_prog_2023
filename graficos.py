@@ -37,7 +37,7 @@ for i, regiao in enumerate(regioes):
     qtde_infra = []
 
     # Adiciona a label com o número total de escolas por região
-    labels.append(f"Escolas Totais: {total_escolas_por_regiao[i]}")
+    labels.append(f"Total de Escolas: {total_escolas_por_regiao[i]}")
     qtde_infra.append(total_escolas_por_regiao[i])
 
     for column, label in marcacao.items():
@@ -50,7 +50,7 @@ for i, regiao in enumerate(regioes):
             value = total_escolas - value
 
         # Adiciona o número total para cada label
-        labels.append(f"{label} - Escolas: {value}")
+        labels.append(f"{label}: {value}")
         qtde_infra.append(value)
 
     index = np.arange(len(labels))
