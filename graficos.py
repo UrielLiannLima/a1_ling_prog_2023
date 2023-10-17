@@ -46,7 +46,7 @@ for i, regiao in enumerate(regioes):
         value = reg_df[column].sum()
         
         #Corrige os dados que vinham invertidos, com o final "_INEXISTENTE"
-        if label in ["Água", "Energia", "Esgotamento Sanitário", "Recursos de Acessibilidade"]:
+        if label in ["Água", "Energia", "Esgotamento Sanitário", "Recursos de Acessibilidade", "Materiais Pedagógicos"]:
             value = total_escolas - value
 
         # Adiciona o número total para cada label
